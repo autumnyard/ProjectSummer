@@ -12,6 +12,7 @@ public class EntityPlayer : EntityBase
 
 	// Management
 	private bool canMove;
+	private bool isPreparingAttack;
 
 	// Design
 	[Header("Attack & defense")]
@@ -41,6 +42,7 @@ public class EntityPlayer : EntityBase
 		player = ReInput.players.GetPlayer( 0 );
 
 		canMove = true;
+		isPreparingAttack = false;
 	}
 
 	private void Update()
@@ -52,11 +54,20 @@ public class EntityPlayer : EntityBase
 			moveVecPoll.y = player.GetAxis( "MoveVertical" );
 			rigidbody.AddForce( moveVecPoll * runSpeed, ForceMode.Force );
 
+			// Attack actions
 			if( player.GetButtonDown( "Attack" ) )
 			{
-				AttackBegin();
+				AttackPreparation();
+			}
+
+			if( isPreparingAttack && player.GetButtonUp( "Attack" ) )
+			{
+
+				StartCoroutine( AttackPerform() );
+				//AttackPerform();
 			}
 			
+			// Defense actions
 			if( player.GetButtonDown( "Defense" ) )
 			{
 				DefenseBegin();
@@ -65,41 +76,45 @@ public class EntityPlayer : EntityBase
 	}
 
 	#region Attack
-	private void AttackBegin()
+	//private void AttackBegin()
+	//{
+	//	Debug.Log( " + Player attack begin " );
+	//	StartCoroutine( AttackPerform() );
+	//}
+
+	private void AttackPreparation()
 	{
-		Debug.Log( " + Player attack begin " );
-		StartCoroutine( AttackPreparation() );
+		// Prepare the attack
+		//Debug.Log( "Player attack preparation " );
+		SetActiveTry( preparationInit, true );
+		isPreparingAttack = true;
 	}
 
-	private IEnumerator AttackPreparation()
+	private IEnumerator AttackPerform()
 	{
 		// Init
-		Debug.Log( "Player attack preparation " );
-		SetActiveTry( preparationInit, true );
-		yield return new WaitForSeconds( preparationInitDelay );
+		//Debug.Log( "Player attack preparation " );
+		//SetActiveTry( preparationInit, true );
+		//yield return new WaitForSeconds( preparationInitDelay );
 
 		// Attack
+		isPreparingAttack = false;
 		canMove = false;
 		SetActiveTry( preparationInit, false );
 		SetActiveTry( preparationAttack, true );
-		Debug.Log( "Player attack action " );
+		//Debug.Log( "Player attack action " );
 		yield return new WaitForSeconds( preparationAttackDelay );
 
 		// Recovery 
 		SetActiveTry( preparationAttack, false );
 		SetActiveTry( preparationRecovery, true );
-		Debug.Log( "Player attack recovery " );
+		//Debug.Log( "Player attack recovery " );
 		yield return new WaitForSeconds( preparationRecoveryDelay );
 
 		// Finish
 		SetActiveTry( preparationRecovery, false );
 		canMove = true;
-		AttackFinish();
-	}
-
-	private void AttackFinish()
-	{
-		Debug.Log( " + Player attack finish " );
+		//Debug.Log( " + Player attack finish " );
 	}
 
 	#endregion
@@ -107,29 +122,23 @@ public class EntityPlayer : EntityBase
 	#region Defense
 	private void DefenseBegin()
 	{
-		Debug.Log( "Player defense begin " );
-		StartCoroutine( DefensePreparation() );
+		//Debug.Log( "Player defense begin " );
+		StartCoroutine( DefensePerform() );
 	}
 
-	private IEnumerator DefensePreparation()
+	private IEnumerator DefensePerform()
 	{
 		canMove = false;
-		Debug.Log( "Player defense preparation " );
+		//Debug.Log( "Player defense preparation " );
 		SetActiveTry( preparationDefense, true );
-		Debug.Log( "Player defense action " );
+		//Debug.Log( "Player defense action " );
 		yield return new WaitForSeconds( preparationDefenseDelay );
 		SetActiveTry( preparationDefense, false );
 		SetActiveTry( preparationRecovery, true );
-		Debug.Log( "Player defense recovery " );
+		//Debug.Log( "Player defense recovery " );
 		yield return new WaitForSeconds( preparationRecoveryDelay );
 		SetActiveTry( preparationRecovery, false );
 		canMove = true;
-		DefenseFinish();
-	}
-
-	private void DefenseFinish()
-	{
-		Debug.Log( "Player defense finish " );
 	}
 	#endregion
 
