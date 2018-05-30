@@ -414,6 +414,8 @@ MonoBehaviour:
   preparationAttackDelay: 0.1
   preparationDefenseDelay: 0.2
   preparationRecoveryDelay: 0.4
+  particlesExplosion: {fileID: 1652784496480710, guid: 6c165a99c9b0f6b46abe4a7070f2619a,
+    type: 2}
   impactForce: 40
   velocityLimit: 50
   preparationInit: {fileID: 1027644030688086}

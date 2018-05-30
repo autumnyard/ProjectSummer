@@ -40,15 +40,15 @@ public class PostRenderer : MonoBehaviour
 		//}
 
 		// Channel color shift
-		//float offsetColor = material.GetFloat( "_OffsetColor" );
-		//if( offsetColor > 0.003f )
-		//{
-		//	material.SetFloat( "_OffsetColor", offsetColor - 0.001f );
-		//}
-		//else if( Random.Range( 0, 400 ) == 1 )
-		//{
-		//	material.SetFloat( "_OffsetColor", Random.Range( 0.003f, 0.1f ) );
-		//}
+		float offsetColor = material.GetFloat( "_OffsetColor" );
+		if( offsetColor > 0.003f )
+		{
+			material.SetFloat( "_OffsetColor", offsetColor - 0.001f );
+		}
+		else if( Random.Range( 0, 400 ) == 1 )
+		{
+			material.SetFloat( "_OffsetColor", Random.Range( 0.003f, 0.1f ) );
+		}
 
 		// Distortion
 		if( Random.Range( 0, 15 ) == 1 )
@@ -60,6 +60,6 @@ public class PostRenderer : MonoBehaviour
 			material.SetFloat( "_OffsetDistortion", 480f );
 		}
 
-		Graphics.Blit( source, destination, material );
+		//Graphics.Blit( source, destination, material );
 	}
 }

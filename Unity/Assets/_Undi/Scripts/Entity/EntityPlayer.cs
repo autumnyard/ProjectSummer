@@ -22,6 +22,7 @@ public class EntityPlayer : EntityBase
 	[SerializeField] private float preparationAttackDelay = 0.2f;
 	[SerializeField] private float preparationDefenseDelay = 1.4f;
 	[SerializeField] private float preparationRecoveryDelay = 0.4f;
+	[SerializeField] private GameObject particlesExplosion;
 
 	[Header( "Physics" )]
 	public float impactForce = 6f;
@@ -208,10 +209,22 @@ public class EntityPlayer : EntityBase
 			}
 			else
 			{
+				// This player was attacked
 				Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
 				// Apply impulse
 				Vector3 direction = CalculateDirection( col.transform.position, transform.position );
 				rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
+
+				// Particles effect
+				if( particlesExplosion != null )
+				{
+					var parts = Instantiate( particlesExplosion, transform.position, transform.rotation );
+					parts.GetComponent<ParticleSystem>().Play();
+				}
+
+				// Camera effects
+				var camShake = Director.Instance.managerCamera.cameras[0].GetComponent<TweenShake>();
+				camShake.Play();
 			}
 			//var script = col.transform.parent.GetComponent<EntityPlayer>();
 			//if( script != null )
