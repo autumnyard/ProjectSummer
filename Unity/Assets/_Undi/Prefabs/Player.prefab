@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 135862382183061560}
   m_Layer: 0
   m_Name: FeedbackDefense
-  m_TagString: Untagged
+  m_TagString: Defense
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 135736203551467118}
   m_Layer: 0
   m_Name: FeedbackAttack
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 54597590052959774}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -408,11 +408,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0647fa857cd37a4ca4474a889864b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   runSpeed: 100
   preparationInitDelay: 0.6
   preparationAttackDelay: 0.1
   preparationDefenseDelay: 0.1
   preparationRecoveryDelay: 0.4
+  impactForce: 40
+  velocityLimit: 50
   preparationInit: {fileID: 1027644030688086}
   preparationAttack: {fileID: 1845629719305184}
   preparationDefense: {fileID: 1192801088336724}
@@ -459,7 +462,7 @@ SphereCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1970531320290916}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: dad9dab59b9a3b24591f8d63f906a52f, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2

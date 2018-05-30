@@ -13,17 +13,22 @@ public class EntityPlayer : EntityBase
 	// Management
 	private bool canMove;
 	private bool isPreparingAttack;
+	//[SerializeField] private uint health;
 
 	// Design
-	[Header("Attack & defense")]
+	[Header( "Attack & defense" )]
 	[SerializeField] private float preparationInitDelay = 0.6f;
 	[SerializeField] private float preparationAttackDelay = 0.2f;
 	[SerializeField] private float preparationDefenseDelay = 0.1f;
 	[SerializeField] private float preparationRecoveryDelay = 0.4f;
 
+	[Header( "Physics" )]
+	public float impactForce = 6f;
+	public float velocityLimit = 60f;
+
 
 	// Graphics
-	[Header("Objects")]
+	[Header( "Objects" )]
 	[SerializeField] private GameObject preparationInit;
 	[SerializeField] private GameObject preparationAttack;
 	[SerializeField] private GameObject preparationDefense;
@@ -33,7 +38,7 @@ public class EntityPlayer : EntityBase
 
 
 
-
+	#region Class Management
 	protected override void Initialize()
 	{
 		base.Initialize();
@@ -49,39 +54,80 @@ public class EntityPlayer : EntityBase
 	{
 		if( canMove )
 		{
+			CheckInput( id );
+		}
+	}
+
+	private void CheckInput( int playerId )
+	{
+		if( playerId == 0 )
+		{
 			// Rewired
-			moveVecPoll.x = player.GetAxis( "MoveHorizontal" ); // get input by name or action id
-			moveVecPoll.y = player.GetAxis( "MoveVertical" );
+			moveVecPoll.x = player.GetAxis( "P1_MoveHorizontal" ); // get input by name or action id
+			moveVecPoll.y = player.GetAxis( "P1_MoveVertical" );
 			rigidbody.AddForce( moveVecPoll * runSpeed, ForceMode.Force );
 
 			// Attack actions
-			if( player.GetButtonDown( "Attack" ) )
+			if( player.GetButtonDown( "P1_Attack" ) )
 			{
 				AttackPreparation();
 			}
 
-			if( isPreparingAttack && player.GetButtonUp( "Attack" ) )
+			if( isPreparingAttack && player.GetButtonUp( "P1_Attack" ) )
 			{
 
 				StartCoroutine( AttackPerform() );
 				//AttackPerform();
 			}
-			
+
 			// Defense actions
-			if( player.GetButtonDown( "Defense" ) )
+			if( player.GetButtonDown( "P1_Defense" ) )
+			{
+				DefenseBegin();
+			}
+		}
+		else if( playerId == 1 )
+		{
+			// Rewired
+			moveVecPoll.x = player.GetAxis( "P2_MoveHorizontal" ); // get input by name or action id
+			moveVecPoll.y = player.GetAxis( "P2_MoveVertical" );
+			rigidbody.AddForce( moveVecPoll * runSpeed, ForceMode.Force );
+
+			// Attack actions
+			if( player.GetButtonDown( "P2_Attack" ) )
+			{
+				AttackPreparation();
+			}
+
+			if( isPreparingAttack && player.GetButtonUp( "P2_Attack" ) )
+			{
+
+				StartCoroutine( AttackPerform() );
+				//AttackPerform();
+			}
+
+			// Defense actions
+			if( player.GetButtonDown( "P2_Defense" ) )
 			{
 				DefenseBegin();
 			}
 		}
 	}
+	#endregion
+
+
+
+	#region Health Management 
+	private void Damage()
+	{
+	}
+	#endregion
+
+
+
+
 
 	#region Attack
-	//private void AttackBegin()
-	//{
-	//	Debug.Log( " + Player attack begin " );
-	//	StartCoroutine( AttackPerform() );
-	//}
-
 	private void AttackPreparation()
 	{
 		// Prepare the attack
@@ -116,8 +162,8 @@ public class EntityPlayer : EntityBase
 		canMove = true;
 		//Debug.Log( " + Player attack finish " );
 	}
-
 	#endregion
+
 
 	#region Defense
 	private void DefenseBegin()
@@ -142,6 +188,53 @@ public class EntityPlayer : EntityBase
 	}
 	#endregion
 
+
+
+	#region Collision
+	void OnTriggerEnter( Collider col )
+	{
+		if( col.gameObject.CompareTag( "Attack" ) )
+		{
+			Debug.Log( gameObject.name + " triggered by Attack of " + col.transform.parent.name );
+			// Calculate direction
+			Vector3 heading = col.transform.position - transform.position;
+			float distance = -heading.magnitude;
+			Vector3 direction = heading / distance;
+
+			// Apply impulse
+			//rigidbody.AddForce(Vector3.left.normalized * impactForce, ForceMode.Impulse);
+			rigidbody.AddForce( direction.normalized * impactForce, ForceMode.Impulse );
+			//if (rigidbody.velocity.magnitude > velocityLimit)
+			//{
+			//    rigidbody.velocity = rigidbody.velocity.normalized * velocityLimit;
+			//}
+		}
+		else if( col.gameObject.CompareTag( "Defense" ) )
+		{
+			Debug.Log( gameObject.name + " triggered by Defense of " + col.transform.parent.name );
+		}
+	}
+
+	void OnCollisionEnter( Collision col )
+	{
+		//For example, when touching another entity
+		if( col.gameObject.CompareTag( "Boundary" ) )
+		{
+			Debug.Log( "Player health -- " );
+			//Vector2 direction = -rigidbody.velocity.normalized;
+			//rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
+			//if( OnCollideWithEntity != null )
+			//{
+			//	OnCollideWithEntity();
+			//}
+		}
+		else if( col.gameObject.CompareTag( "Player" ) )
+		{
+			Debug.Log( "Player collided with player " );
+            //rigidbody.AddForce(col.rigidbody.velocity.normalized * impactForce, ForceMode.Impulse);
+		}
+	}
+	#endregion
 
 
 

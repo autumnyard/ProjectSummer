@@ -5,7 +5,7 @@ public class ManagerEntity : MonoBehaviour
 {
     #region Variables
     // Players
-    const int maxPlayers = 1;
+    const int maxPlayers = 2;
     [SerializeField] private GameObject prefabPlayer;
 	[SerializeField] private GameObject[] players = new GameObject[maxPlayers];
     [HideInInspector] public EntityBase[] playersScript = new EntityBase[maxPlayers];
@@ -13,7 +13,8 @@ public class ManagerEntity : MonoBehaviour
     // TODO: Enemy management in a dynamic list
     // TODO: Inanimate entities, like objects, in a dynamic list
     // TODO: Pickup entities, like items, in a dynamic list
-    [SerializeField] private Transform playerInitPosition;
+    [SerializeField] private Transform player1InitPosition;
+    [SerializeField] private Transform player2InitPosition;
 
     #endregion
 
@@ -33,12 +34,19 @@ public class ManagerEntity : MonoBehaviour
     #region Entity Management
     public void SummonPlayers()
     {
-		Vector2 initPos = Vector2.zero;
-		if( playerInitPosition != null )
+		Vector2 initPos1 = Vector2.zero;
+		if( player1InitPosition != null )
 		{
-			initPos = playerInitPosition.position;
+			initPos1 = player1InitPosition.position;
 		}
-        SummonPlayer(0, initPos);
+        SummonPlayer(0, initPos1);
+		
+		Vector2 initPos2 = Vector2.zero;
+		if( player2InitPosition != null )
+		{
+			initPos2 = player2InitPosition.position;
+		}
+        SummonPlayer(1, initPos2);
     }
 
     public void SummonPlayer(int which, Vector2 position)

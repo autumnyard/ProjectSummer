@@ -29,7 +29,7 @@ public abstract class EntityBase : MonoBehaviour
 
 	// Data
 	// [Header("Data")]
-	private int id;
+	public int id;
 	protected int health;
 	protected const int healthMax = 20;
 	private bool isInvulnerable;
@@ -181,6 +181,7 @@ public abstract class EntityBase : MonoBehaviour
 	public void Set( int idP )
 	{
 		id = idP;
+		transform.name = "Player" + (id + 1).ToString();
 	}
 
 	private void SetInvulnerability( bool to )
@@ -328,7 +329,10 @@ public abstract class EntityBase : MonoBehaviour
 		rigidbody.AddForce( Vector2.right * runSpeed, ForceMode.Force );
 	}
 	*/
+	#endregion
 
+
+	#region Collision
 	void OnTriggerExit( Collider col )
 	{
 		//// For example, when exiting the game zone
