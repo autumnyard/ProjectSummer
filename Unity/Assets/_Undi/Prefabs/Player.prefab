@@ -412,7 +412,7 @@ MonoBehaviour:
   runSpeed: 100
   preparationInitDelay: 0.6
   preparationAttackDelay: 0.1
-  preparationDefenseDelay: 0.1
+  preparationDefenseDelay: 1
   preparationRecoveryDelay: 0.4
   impactForce: 40
   velocityLimit: 50

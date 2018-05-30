@@ -13,13 +13,14 @@ public class EntityPlayer : EntityBase
 	// Management
 	private bool canMove;
 	private bool isPreparingAttack;
+	public bool isDefending { get; private set; }
 	//[SerializeField] private uint health;
 
 	// Design
 	[Header( "Attack & defense" )]
 	[SerializeField] private float preparationInitDelay = 0.6f;
 	[SerializeField] private float preparationAttackDelay = 0.2f;
-	[SerializeField] private float preparationDefenseDelay = 0.1f;
+	[SerializeField] private float preparationDefenseDelay = 1.4f;
 	[SerializeField] private float preparationRecoveryDelay = 0.4f;
 
 	[Header( "Physics" )]
@@ -48,6 +49,7 @@ public class EntityPlayer : EntityBase
 
 		canMove = true;
 		isPreparingAttack = false;
+		isDefending = false;
 	}
 
 	private void Update()
@@ -174,12 +176,14 @@ public class EntityPlayer : EntityBase
 
 	private IEnumerator DefensePerform()
 	{
-		canMove = false;
 		//Debug.Log( "Player defense preparation " );
+		canMove = false;
+		isDefending = true;
 		SetActiveTry( preparationDefense, true );
 		//Debug.Log( "Player defense action " );
 		yield return new WaitForSeconds( preparationDefenseDelay );
 		SetActiveTry( preparationDefense, false );
+		isDefending = false;
 		SetActiveTry( preparationRecovery, true );
 		//Debug.Log( "Player defense recovery " );
 		yield return new WaitForSeconds( preparationRecoveryDelay );
@@ -195,23 +199,43 @@ public class EntityPlayer : EntityBase
 	{
 		if( col.gameObject.CompareTag( "Attack" ) )
 		{
-			Debug.Log( gameObject.name + " triggered by Attack of " + col.transform.parent.name );
-			// Calculate direction
-			Vector3 heading = col.transform.position - transform.position;
-			float distance = -heading.magnitude;
-			Vector3 direction = heading / distance;
-
-			// Apply impulse
-			//rigidbody.AddForce(Vector3.left.normalized * impactForce, ForceMode.Impulse);
-			rigidbody.AddForce( direction.normalized * impactForce, ForceMode.Impulse );
-			//if (rigidbody.velocity.magnitude > velocityLimit)
+			if( isDefending )
+			{
+				// If parry
+				Debug.Log( gameObject.name + " parries " + col.transform.parent.name );
+				Vector3 direction = CalculateDirection( transform.position, col.transform.position );
+				col.transform.parent.GetComponent<Rigidbody>().AddForce( direction * impactForce, ForceMode.Impulse );
+			}
+			else
+			{
+				Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
+				// Apply impulse
+				Vector3 direction = CalculateDirection( col.transform.position, transform.position );
+				rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
+			}
+			//var script = col.transform.parent.GetComponent<EntityPlayer>();
+			//if( script != null )
 			//{
-			//    rigidbody.velocity = rigidbody.velocity.normalized * velocityLimit;
+			//	if( script.isDefending )
+			//	{
+			//		// If parry
+			//		Debug.Log( " +++ Parry" );
+			//	}
+			//	else
+			//	{
+			//		Debug.Log( gameObject.name + " triggered by Attack of " + col.transform.parent.name );
+			//		// Calculate direction
+			//		Vector3 heading = col.transform.position - transform.position;
+			//		float distance = -heading.magnitude;
+			//		Vector3 direction = heading / distance;
+			//		// Apply impulse
+			//		rigidbody.AddForce( direction.normalized * impactForce, ForceMode.Impulse );
+			//	}
 			//}
 		}
 		else if( col.gameObject.CompareTag( "Defense" ) )
 		{
-			Debug.Log( gameObject.name + " triggered by Defense of " + col.transform.parent.name );
+			//Debug.Log( gameObject.name + " triggered by Defense of " + col.transform.parent.name );
 		}
 	}
 
@@ -220,7 +244,7 @@ public class EntityPlayer : EntityBase
 		//For example, when touching another entity
 		if( col.gameObject.CompareTag( "Boundary" ) )
 		{
-			Debug.Log( "Player health -- " );
+			//Debug.Log( "Player health -- " );
 			//Vector2 direction = -rigidbody.velocity.normalized;
 			//rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
 			//if( OnCollideWithEntity != null )
@@ -230,8 +254,8 @@ public class EntityPlayer : EntityBase
 		}
 		else if( col.gameObject.CompareTag( "Player" ) )
 		{
-			Debug.Log( "Player collided with player " );
-            //rigidbody.AddForce(col.rigidbody.velocity.normalized * impactForce, ForceMode.Impulse);
+			//Debug.Log( "Player collided with player " );
+			//rigidbody.AddForce(col.rigidbody.velocity.normalized * impactForce, ForceMode.Impulse);
 		}
 	}
 	#endregion
@@ -245,6 +269,14 @@ public class EntityPlayer : EntityBase
 		{
 			go.SetActive( to );
 		}
+	}
+
+	private Vector3 CalculateDirection( Vector3 pointA, Vector3 pointB )
+	{
+		Vector3 heading = pointA - pointB;
+		float distance = -heading.magnitude;
+		Vector3 direction = heading / distance;
+		return direction.normalized;
 	}
 	#endregion
 
