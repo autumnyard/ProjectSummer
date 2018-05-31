@@ -74,7 +74,7 @@ public class Director : MonoBehaviour
 	{
 		currentScene = to;
 
-		Debug.Log("Change scene to: " + currentScene);
+		//Debug.Log("Change scene to: " + currentScene);
 
 		switch( currentScene )
 		{
@@ -84,8 +84,8 @@ public class Director : MonoBehaviour
 
 			case Structs.GameScene.Menu:
 				managerUI.SetPanels();
-				managerEntity.SummonPlayers();
-				managerInput.SetEvents();
+				//managerInput.SetEvents(); // using rewired
+				GameBegin(); // there's no menu yet
 				break;
 
 			case Structs.GameScene.LoadingGame:
@@ -96,27 +96,41 @@ public class Director : MonoBehaviour
 			case Structs.GameScene.Ingame:
 				// This loads the map, sets the player and the camera
 				// Using the number of the level
-				LoadLevel();
+				//LoadLevel();
 
-				//if( managerEntity.playersScript[0] != null )
-				//{
-				//	managerEntity.playersScript[0].OnDie += GameEnd;
-				//}
+				// Load the 2 players
+				managerEntity.SummonPlayers();
 
-				managerInput.SetEvents();
+				// And subscribe to endgame conditions
+				if( managerEntity.playersScript[0] != null )
+				{
+					managerEntity.playersScript[0].OnDie += GameEnd;
+				}
+				if( managerEntity.playersScript[1] != null )
+				{
+					managerEntity.playersScript[1].OnDie += GameEnd;
+				}
+
+				//managerInput.SetEvents(); // using rewired
 				managerUI.SetPanels();
 				break;
 
 			case Structs.GameScene.GameReset:
-				//managerEntity.playersScript[0].OnDie -= GameEnd;
-				//managerEntity.Reset();
+				// Unsubscribe from endgame conditions
+				managerEntity.playersScript[0].OnDie -= GameEnd;
+				managerEntity.playersScript[1].OnDie -= GameEnd;
+
+				managerEntity.Reset(); // and remove players
 				//managerMap.Reset();
 				GameBegin();
 				break;
 
 			case Structs.GameScene.GameEnd:
-				//managerEntity.playersScript[0].OnDie -= GameEnd;
-				//managerEntity.Reset();
+				// Unsubscribe from endgame conditions
+				managerEntity.playersScript[0].OnDie -= GameEnd;
+				managerEntity.playersScript[1].OnDie -= GameEnd;
+
+				managerEntity.Reset();  // and remove players
 				//managerMap.Reset();
 				managerInput.SetEvents();
 				managerUI.SetPanels();

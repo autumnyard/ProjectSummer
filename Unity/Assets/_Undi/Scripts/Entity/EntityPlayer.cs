@@ -226,14 +226,24 @@ public class EntityPlayer : EntityBase
 			{
 				// This player was attacked
 				Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
+				
+				// Damage and check endgame condition
+				health--;
+				if( health <= 0 )
+				{
+					if( OnDie != null )
+					{
+						OnDie();
+					}
+				}
+
+				// Update UI
+				Director.Instance.managerUI.SetHealth( id, health );
 
 				// Apply physics
 				Vector3 direction = CalculateDirection( col.transform.position, transform.position );
 				rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
 				
-				// Damage and update UI
-				health--;
-				Director.Instance.managerUI.SetHealth( id, health );
 
 				// Particles effect
 				if( particlesExplosion != null )
