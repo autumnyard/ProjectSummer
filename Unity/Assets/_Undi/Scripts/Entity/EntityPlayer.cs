@@ -226,7 +226,7 @@ public class EntityPlayer : EntityBase
 			{
 				// This player was attacked
 				Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
-				
+
 				// Damage and check endgame condition
 				health--;
 				if( health <= 0 )
@@ -243,7 +243,6 @@ public class EntityPlayer : EntityBase
 				// Apply physics
 				Vector3 direction = CalculateDirection( col.transform.position, transform.position );
 				rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
-				
 
 				// Particles effect
 				if( particlesExplosion != null )
@@ -255,6 +254,10 @@ public class EntityPlayer : EntityBase
 				// Camera effects
 				var camShake = Director.Instance.managerCamera.cameras[0].GetComponent<TweenShake>();
 				camShake.Play();
+
+				// Sound effects
+				//Director.Instance.managerAudio.PlaySfx( ManagerAudio.Sfx.Explosion1 );
+				Director.Instance.managerAudio.PlayRandomExplosionSfx();
 			}
 			//var script = col.transform.parent.GetComponent<EntityPlayer>();
 			//if( script != null )

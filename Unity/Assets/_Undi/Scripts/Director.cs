@@ -16,7 +16,7 @@ public class Director : MonoBehaviour
 	public ManagerInput managerInput;
 	public ManagerUI managerUI;
 	//public ScoreManager scoreManager;
-	//public ManagerAudio managerAudio;
+	public ManagerAudio managerAudio;
 
 
 	public Structs.GameMode currentGameMode { private set; get; }
@@ -113,6 +113,9 @@ public class Director : MonoBehaviour
 
 				//managerInput.SetEvents(); // using rewired
 				managerUI.SetPanels();
+
+				// Play start sfx
+				managerAudio.PlaySfx( ManagerAudio.Sfx.Start );
 				break;
 
 			case Structs.GameScene.GameReset:
@@ -121,7 +124,7 @@ public class Director : MonoBehaviour
 				managerEntity.playersScript[1].OnDie -= GameEnd;
 
 				managerEntity.Reset(); // and remove players
-				//managerMap.Reset();
+									   //managerMap.Reset();
 				GameBegin();
 				break;
 
@@ -131,7 +134,7 @@ public class Director : MonoBehaviour
 				managerEntity.playersScript[1].OnDie -= GameEnd;
 
 				managerEntity.Reset();  // and remove players
-				//managerMap.Reset();
+										//managerMap.Reset();
 				managerInput.SetEvents();
 				managerUI.SetPanels();
 				SwitchToMenu();
@@ -155,65 +158,65 @@ public class Director : MonoBehaviour
 	}
 	private void LoadLevel()
 	{
-	/*
-		// Reset entities and map
-		managerEntity.Reset();
-		managerMap.Reset();
+		/*
+			// Reset entities and map
+			managerEntity.Reset();
+			managerMap.Reset();
 
-		// Load the current level
-		managerMap.LoadMap( currentLevel );
-		var newMap = managerMap.mapScript;
-		//Debug.Log( "Loading level number: " + (currentLevel + 1).ToString() );
+			// Load the current level
+			managerMap.LoadMap( currentLevel );
+			var newMap = managerMap.mapScript;
+			//Debug.Log( "Loading level number: " + (currentLevel + 1).ToString() );
 
-		// Load player init position from map
-		// If there is a player init pos in the map data
-		Vector2 playerInitPos;
-		if( newMap.players.Count > 0 )
-		{
-			playerInitPos = managerMap.mapScript.players[0];
-		}
-		else
-		{
-			playerInitPos = Vector2.zero;
-		}
-		managerEntity.SummonPlayer( 0, playerInitPos );
+			// Load player init position from map
+			// If there is a player init pos in the map data
+			Vector2 playerInitPos;
+			if( newMap.players.Count > 0 )
+			{
+				playerInitPos = managerMap.mapScript.players[0];
+			}
+			else
+			{
+				playerInitPos = Vector2.zero;
+			}
+			managerEntity.SummonPlayer( 0, playerInitPos );
 
-		// And finally, set camera
-		Vector2 cameraInitPos = Vector2.zero;
+			// And finally, set camera
+			Vector2 cameraInitPos = Vector2.zero;
 
-		switch( newMap.cameraType )
-		{
-			case CameraHelper.Type.FixedPoint:
-				if( newMap.cameraGrabs.Count > 0 )
-				{
-					// If there is camera data, init camera to first cameragrab
-					cameraInitPos = managerMap.mapScript.cameraGrabs[0];
-				}
-				managerCamera.cameras[0].SetFixedPoint( cameraInitPos );
-				break;
+			switch( newMap.cameraType )
+			{
+				case CameraHelper.Type.FixedPoint:
+					if( newMap.cameraGrabs.Count > 0 )
+					{
+						// If there is camera data, init camera to first cameragrab
+						cameraInitPos = managerMap.mapScript.cameraGrabs[0];
+					}
+					managerCamera.cameras[0].SetFixedPoint( cameraInitPos );
+					break;
 
-			case CameraHelper.Type.FixedAxis:
-				break;
+				case CameraHelper.Type.FixedAxis:
+					break;
 
-			case CameraHelper.Type.SnapToCameraGrabs:
-				//Debug.Log( "CameraGrabs on new map: " + newMap.cameraGrabs.Count );
-				if( newMap.cameraGrabs.Count > 0 )
-				{
-					managerCamera.cameras[0].SetSnapToCameraGrab();
-				}
-				else
-				{
-					// If there are no camera grabs, just fall back to default follow player
+				case CameraHelper.Type.SnapToCameraGrabs:
+					//Debug.Log( "CameraGrabs on new map: " + newMap.cameraGrabs.Count );
+					if( newMap.cameraGrabs.Count > 0 )
+					{
+						managerCamera.cameras[0].SetSnapToCameraGrab();
+					}
+					else
+					{
+						// If there are no camera grabs, just fall back to default follow player
+						managerCamera.cameras[0].SetFollow( managerEntity.playersScript[0].transform );
+					}
+					break;
+
+				default: // By default, just follow the first player
+				case CameraHelper.Type.Follow:
 					managerCamera.cameras[0].SetFollow( managerEntity.playersScript[0].transform );
-				}
-				break;
-
-			default: // By default, just follow the first player
-			case CameraHelper.Type.Follow:
-				managerCamera.cameras[0].SetFollow( managerEntity.playersScript[0].transform );
-				break;
-		}
-	*/
+					break;
+			}
+		*/
 	}
 
 	private void LoadNumberLevel( int levelNumber )
@@ -334,5 +337,8 @@ public class Director : MonoBehaviour
 		*/
 	}
 
+	//private void PlayStartThingies()
+	//{
+	//		}
 	#endregion
 }
