@@ -14,6 +14,7 @@ public class EntityPlayer : EntityBase
 	private bool canMove;
 	private bool isPreparingAttack;
 	public bool isDefending { get; private set; }
+
 	//[SerializeField] private uint health;
 
 	// Design
@@ -35,6 +36,8 @@ public class EntityPlayer : EntityBase
 	[SerializeField] private GameObject preparationAttack;
 	[SerializeField] private GameObject preparationDefense;
 	[SerializeField] private GameObject preparationRecovery;
+	[SerializeField] private Material p1material;
+	[SerializeField] private Material p2material;
 
 	#endregion
 
@@ -48,9 +51,12 @@ public class EntityPlayer : EntityBase
 		// Rewired
 		player = ReInput.players.GetPlayer( 0 );
 
+		// Set init variables
+		health = healthMax;
 		canMove = true;
 		isPreparingAttack = false;
 		isDefending = false;
+
 	}
 
 	private void Update()
@@ -115,6 +121,15 @@ public class EntityPlayer : EntityBase
 				DefenseBegin();
 			}
 		}
+	}
+
+	public override void Set( int idP )
+	{
+		base.Set( idP );
+		//Set name
+		transform.name = "Player" + (id + 1).ToString();
+		// Set material
+		SetGraphics();
 	}
 	#endregion
 
@@ -211,9 +226,14 @@ public class EntityPlayer : EntityBase
 			{
 				// This player was attacked
 				Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
-				// Apply impulse
+
+				// Apply physics
 				Vector3 direction = CalculateDirection( col.transform.position, transform.position );
 				rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
+				
+				// Damage and update UI
+				health--;
+				Director.Instance.managerUI.SetHealth( id, health );
 
 				// Particles effect
 				if( particlesExplosion != null )
@@ -281,6 +301,27 @@ public class EntityPlayer : EntityBase
 		if( go != null )
 		{
 			go.SetActive( to );
+		}
+	}
+
+	private void SetGraphics()
+	{
+		switch( id )
+		{
+			default:
+			case 0:
+				if( p1material != null )
+				{
+					GetComponent<Renderer>().material = p1material;
+				}
+				break;
+
+			case 1:
+				if( p2material != null )
+				{
+					GetComponent<Renderer>().material = p2material;
+				}
+				break;
 		}
 	}
 

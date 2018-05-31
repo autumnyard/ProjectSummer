@@ -30,8 +30,8 @@ public abstract class EntityBase : MonoBehaviour
 	// Data
 	// [Header("Data")]
 	public int id;
-	protected int health;
-	protected const int healthMax = 20;
+	[SerializeField] protected int health;
+	protected const int healthMax = 5;
 	private bool isInvulnerable;
 	private float invulnerabilityTime = -1f;
 	private const uint invulnerabilityFrames = 5u;
@@ -147,7 +147,7 @@ public abstract class EntityBase : MonoBehaviour
 			case States.Init:
 				SetInvulnerability( true );
 				health = healthMax;
-				Director.Instance.managerUI.SetHealth( health );
+				Director.Instance.managerUI.SetHealth(id, health );
 				ChangeState( States.Appearing ); // Automatically change to appearing
 				break;
 
@@ -178,10 +178,9 @@ public abstract class EntityBase : MonoBehaviour
 
 
 	#region Entity management
-	public void Set( int idP )
+	public virtual void Set( int idP )
 	{
 		id = idP;
-		transform.name = "Player" + (id + 1).ToString();
 	}
 
 	private void SetInvulnerability( bool to )

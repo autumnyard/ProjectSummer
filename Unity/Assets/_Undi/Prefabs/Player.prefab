@@ -409,6 +409,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
+  health: 0
   runSpeed: 100
   preparationInitDelay: 0.6
   preparationAttackDelay: 0.1
@@ -422,6 +423,8 @@ MonoBehaviour:
   preparationAttack: {fileID: 1845629719305184}
   preparationDefense: {fileID: 1192801088336724}
   preparationRecovery: {fileID: 1286715175757032}
+  p1material: {fileID: 2100000, guid: 39dec4f80edc6e5488b5c6080a1b09bf, type: 2}
+  p2material: {fileID: 2100000, guid: 2391e93be004fdf42ba943c8580efe61, type: 2}
 --- !u!135 &135736203551467118
 SphereCollider:
   m_ObjectHideFlags: 1
