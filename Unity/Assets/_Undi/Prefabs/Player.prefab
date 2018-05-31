@@ -141,7 +141,7 @@ Transform:
   m_GameObject: {fileID: 1192801088336724}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 4832190948773910}
   m_RootOrder: 2
@@ -154,7 +154,7 @@ Transform:
   m_GameObject: {fileID: 1286715175757032}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_Children: []
   m_Father: {fileID: 4832190948773910}
   m_RootOrder: 3
@@ -167,7 +167,7 @@ Transform:
   m_GameObject: {fileID: 1027644030688086}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children: []
   m_Father: {fileID: 4832190948773910}
   m_RootOrder: 0
@@ -179,8 +179,8 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1286715175757032}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -214,8 +214,8 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1845629719305184}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -249,8 +249,8 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1027644030688086}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -319,8 +319,8 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1192801088336724}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -415,9 +415,12 @@ MonoBehaviour:
   preparationAttackDelay: 0.1
   preparationDefenseDelay: 0.2
   preparationRecoveryDelay: 0.4
-  particlesExplosion: {fileID: 1652784496480710, guid: 6c165a99c9b0f6b46abe4a7070f2619a,
+  particlesExplosionAttack: {fileID: 1677400317483892, guid: f908239089d7781408f862d31e135ead,
     type: 2}
-  impactForce: 40
+  particlesExplosionParry: {fileID: 1322352930963072, guid: 83ac3208da20d124680f6d53ac0045fe,
+    type: 2}
+  impactForceAttack: 50
+  impactForceParry: 110
   velocityLimit: 50
   preparationInit: {fileID: 1027644030688086}
   preparationAttack: {fileID: 1845629719305184}

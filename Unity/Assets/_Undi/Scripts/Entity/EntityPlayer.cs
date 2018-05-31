@@ -6,6 +6,12 @@ using Rewired;
 public class EntityPlayer : EntityBase
 {
 	#region Variables
+
+	private enum CollisionType
+	{
+		Attack,
+		Parry
+	}
 	// Rewired
 	private Player player; // The Rewired Player
 	private Vector2 moveVecPoll;
@@ -23,10 +29,12 @@ public class EntityPlayer : EntityBase
 	[SerializeField] private float preparationAttackDelay = 0.2f;
 	[SerializeField] private float preparationDefenseDelay = 1.4f;
 	[SerializeField] private float preparationRecoveryDelay = 0.4f;
-	[SerializeField] private GameObject particlesExplosion;
+	[SerializeField] private GameObject particlesExplosionAttack;
+	[SerializeField] private GameObject particlesExplosionParry;
 
 	[Header( "Physics" )]
-	public float impactForce = 6f;
+	public float impactForceAttack = 50f;
+	public float impactForceParry = 110f;
 	public float velocityLimit = 60f;
 
 
@@ -39,6 +47,8 @@ public class EntityPlayer : EntityBase
 	[SerializeField] private Material p1material;
 	[SerializeField] private Material p2material;
 
+	// Internal management
+	private Coroutine currentAction;
 	#endregion
 
 
@@ -51,12 +61,19 @@ public class EntityPlayer : EntityBase
 		// Rewired
 		player = ReInput.players.GetPlayer( 0 );
 
+		// Set objects
+		preparationInit.SetActive( false );
+		preparationAttack.SetActive( false );
+		preparationDefense.SetActive( false );
+		preparationRecovery.SetActive( false );
+
 		// Set init variables
 		health = healthMax;
 		canMove = true;
 		isPreparingAttack = false;
 		isDefending = false;
 
+		currentAction = null;
 	}
 
 	private void Update()
@@ -77,22 +94,22 @@ public class EntityPlayer : EntityBase
 			rigidbody.AddForce( moveVecPoll * runSpeed, ForceMode.Force );
 
 			// Attack actions
-			if( player.GetButtonDown( "P1_Attack" ) )
+			if( !isDefending && player.GetButtonDown( "P1_Attack" ) )
 			{
-				AttackPreparation();
+				ActionAttackPreparation();
 			}
 
 			if( isPreparingAttack && player.GetButtonUp( "P1_Attack" ) )
 			{
 
-				StartCoroutine( AttackPerform() );
+				currentAction = StartCoroutine( ActionAttack() );
 				//AttackPerform();
 			}
 
 			// Defense actions
-			if( player.GetButtonDown( "P1_Defense" ) )
+			if( !isPreparingAttack && player.GetButtonDown( "P1_Defense" ) )
 			{
-				DefenseBegin();
+				currentAction = StartCoroutine( ActionDefense() );
 			}
 		}
 		else if( playerId == 1 )
@@ -103,22 +120,22 @@ public class EntityPlayer : EntityBase
 			rigidbody.AddForce( moveVecPoll * runSpeed, ForceMode.Force );
 
 			// Attack actions
-			if( player.GetButtonDown( "P2_Attack" ) )
+			if( !isDefending && player.GetButtonDown( "P2_Attack" ) )
 			{
-				AttackPreparation();
+				ActionAttackPreparation();
 			}
 
 			if( isPreparingAttack && player.GetButtonUp( "P2_Attack" ) )
 			{
 
-				StartCoroutine( AttackPerform() );
+				currentAction = StartCoroutine( ActionAttack() );
 				//AttackPerform();
 			}
 
 			// Defense actions
-			if( player.GetButtonDown( "P2_Defense" ) )
+			if( !isPreparingAttack && player.GetButtonDown( "P2_Defense" ) )
 			{
-				DefenseBegin();
+				currentAction = StartCoroutine( ActionDefense() );
 			}
 		}
 	}
@@ -136,8 +153,34 @@ public class EntityPlayer : EntityBase
 
 
 	#region Health Management 
-	private void Damage()
+	private void Damage( CollisionType type )
 	{
+		//Damage
+		switch( type )
+		{
+			default:
+			case CollisionType.Attack:
+				health--;
+				break;
+			case CollisionType.Parry:
+				health -= 2;
+				break;
+		}
+
+		// Check endgame conditions
+		if( health <= 0 )
+		{
+			if( OnDie != null )
+			{
+				OnDie();
+			}
+
+			// Increase score
+			Director.Instance.managerGame.ScoreIncrease( id );
+		}
+
+		// Update UI
+		Director.Instance.managerUI.SetHealth( id, health );
 	}
 	#endregion
 
@@ -145,64 +188,59 @@ public class EntityPlayer : EntityBase
 
 
 
-	#region Attack
-	private void AttackPreparation()
+	#region Actions
+	// Attack preparation
+	private void ActionAttackPreparation()
 	{
 		// Prepare the attack
-		//Debug.Log( "Player attack preparation " );
 		SetActiveTry( preparationInit, true );
 		isPreparingAttack = true;
 	}
 
-	private IEnumerator AttackPerform()
+	// Attack
+	private IEnumerator ActionAttack()
 	{
-		// Init
-		//Debug.Log( "Player attack preparation " );
-		//SetActiveTry( preparationInit, true );
-		//yield return new WaitForSeconds( preparationInitDelay );
-
-		// Attack
 		isPreparingAttack = false;
 		canMove = false;
 		SetActiveTry( preparationInit, false );
 		SetActiveTry( preparationAttack, true );
-		//Debug.Log( "Player attack action " );
 		yield return new WaitForSeconds( preparationAttackDelay );
 
-		// Recovery 
-		SetActiveTry( preparationAttack, false );
-		SetActiveTry( preparationRecovery, true );
-		//Debug.Log( "Player attack recovery " );
-		yield return new WaitForSeconds( preparationRecoveryDelay );
-
-		// Finish
-		SetActiveTry( preparationRecovery, false );
-		canMove = true;
-		//Debug.Log( " + Player attack finish " );
-	}
-	#endregion
-
-
-	#region Defense
-	private void DefenseBegin()
-	{
-		//Debug.Log( "Player defense begin " );
-		StartCoroutine( DefensePerform() );
+		ActionRecoveryBegin();
 	}
 
-	private IEnumerator DefensePerform()
+	// Defense
+	private IEnumerator ActionDefense()
 	{
-		//Debug.Log( "Player defense preparation " );
 		canMove = false;
 		isDefending = true;
 		SetActiveTry( preparationDefense, true );
-		//Debug.Log( "Player defense action " );
 		yield return new WaitForSeconds( preparationDefenseDelay );
-		SetActiveTry( preparationDefense, false );
+
+		ActionRecoveryBegin();
+	}
+
+	// Recovery 
+	private void ActionRecoveryBegin()
+	{
 		isDefending = false;
+		SetActiveTry( preparationDefense, false );
+		SetActiveTry( preparationAttack, false );
+
+		currentAction = StartCoroutine( ActionRecoveryPerform() );
+	}
+
+	private IEnumerator ActionRecoveryPerform()
+	{
 		SetActiveTry( preparationRecovery, true );
-		//Debug.Log( "Player defense recovery " );
 		yield return new WaitForSeconds( preparationRecoveryDelay );
+
+		ActionRecoveryEnd();
+	}
+
+	private void ActionRecoveryEnd()
+	{
+		// Finish
 		SetActiveTry( preparationRecovery, false );
 		canMove = true;
 	}
@@ -218,70 +256,30 @@ public class EntityPlayer : EntityBase
 			if( isDefending )
 			{
 				// If parry
-				Debug.Log( gameObject.name + " parries " + col.transform.parent.name );
+				//Debug.Log( gameObject.name + " parries " + col.transform.parent.name );
+
+				// TODO: Damage the other player
 				Vector3 direction = CalculateDirection( transform.position, col.transform.position );
-				col.transform.parent.GetComponent<Rigidbody>().AddForce( direction * impactForce, ForceMode.Impulse );
+				col.transform.parent.GetComponent<EntityPlayer>().ReceiveParry( direction );
+
+				// Force stop the defense
+				isDefending = false;
 			}
 			else
 			{
 				// This player was attacked
-				Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
+				//Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
 
 				// Damage and check endgame condition
-				health--;
-				if( health <= 0 )
-				{
-					if( OnDie != null )
-					{
-						OnDie();
-					}
-
-					// Increase score
-					Director.Instance.managerGame.ScoreIncrease( id );
-				}
-
-				// Update UI
-				Director.Instance.managerUI.SetHealth( id, health );
+				Damage( CollisionType.Attack );
 
 				// Apply physics
 				Vector3 direction = CalculateDirection( col.transform.position, transform.position );
-				rigidbody.AddForce( direction * impactForce, ForceMode.Impulse );
+				rigidbody.AddForce( direction * impactForceAttack, ForceMode.Impulse );
 
-				// Particles effect
-				if( particlesExplosion != null )
-				{
-					var parts = Instantiate( particlesExplosion, transform.position, transform.rotation );
-					parts.GetComponent<ParticleSystem>().Play();
-				}
-
-				// Camera effects
-				var camShake = Director.Instance.managerCamera.cameras[0].GetComponent<TweenShake>();
-				camShake.Play();
-
-				// Sound effects
-				//Director.Instance.managerAudio.PlaySfx( ManagerAudio.Sfx.Explosion1 );
-				Director.Instance.managerAudio.PlayRandomExplosionSfx();
-
+				// Feedback
+				CollisionFeedback( CollisionType.Attack );
 			}
-			//var script = col.transform.parent.GetComponent<EntityPlayer>();
-			//if( script != null )
-			//{
-			//	if( script.isDefending )
-			//	{
-			//		// If parry
-			//		Debug.Log( " +++ Parry" );
-			//	}
-			//	else
-			//	{
-			//		Debug.Log( gameObject.name + " triggered by Attack of " + col.transform.parent.name );
-			//		// Calculate direction
-			//		Vector3 heading = col.transform.position - transform.position;
-			//		float distance = -heading.magnitude;
-			//		Vector3 direction = heading / distance;
-			//		// Apply impulse
-			//		rigidbody.AddForce( direction.normalized * impactForce, ForceMode.Impulse );
-			//	}
-			//}
 		}
 		else if( col.gameObject.CompareTag( "Defense" ) )
 		{
@@ -313,11 +311,69 @@ public class EntityPlayer : EntityBase
 
 
 	#region Helpers
+	public void ReceiveParry( Vector3 direction )
+	{
+		Debug.Log( gameObject.name + " has been parried " );
+		GetComponent<Rigidbody>().AddForce( direction * impactForceParry, ForceMode.Impulse );
+
+		Damage( CollisionType.Parry );
+
+		// Force stop the current action
+		isDefending = false;
+		if( currentAction != null )
+		{
+			StopCoroutine( currentAction );
+			currentAction = null;
+		}
+		ActionRecoveryBegin();
+
+		// Feedback
+		CollisionFeedback( CollisionType.Parry );
+	}
+
+	private void CollisionFeedback( CollisionType type )
+	{
+		// Camera effects
+		var camShake = Director.Instance.managerCamera.cameras[0].GetComponent<TweenShake>();
+
+		// Sound effects
+		switch( type )
+		{
+			default:
+			case CollisionType.Attack:
+				PlayParticles( particlesExplosionAttack );
+				Director.Instance.managerAudio.PlaySfx( ManagerAudio.Sfx.Explosion1 );
+				camShake.time = 0.5f;
+				camShake.strength = Vector3.one * 0.9f;
+				break;
+
+			case CollisionType.Parry:
+				PlayParticles( particlesExplosionParry );
+				Director.Instance.managerAudio.PlaySfx( ManagerAudio.Sfx.Explosion3 );
+				camShake.time = 0.8f;
+				camShake.strength = Vector3.one * 1.2f;
+				break;
+		}
+		//Director.Instance.managerAudio.PlayRandomExplosionSfx();
+
+		// Play camera effects
+		camShake.Play();
+	}
+
 	private void SetActiveTry( GameObject go, bool to )
 	{
 		if( go != null )
 		{
 			go.SetActive( to );
+		}
+	}
+
+	private void PlayParticles( GameObject particlePrefab )
+	{
+		if( particlePrefab != null )
+		{
+			var parts = Instantiate( particlePrefab, transform.position, transform.rotation );
+			parts.GetComponent<ParticleSystem>().Play();
 		}
 	}
 
