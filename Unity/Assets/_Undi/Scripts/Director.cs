@@ -7,7 +7,7 @@ public class Director : MonoBehaviour
 {
 
 	#region Variables
-	public GameManager gameManager;
+	public GameManager managerGame;
 	public ManagerCamera managerCamera;
 	//public Player player;
 	//public ManagerMap managerMap;
@@ -80,6 +80,9 @@ public class Director : MonoBehaviour
 		{
 			case Structs.GameScene.Initialization:
 				SwitchToMenu();
+
+				// Reset game. Only set score to 0 for now
+				managerGame.Initialize();
 				break;
 
 			case Structs.GameScene.Menu:

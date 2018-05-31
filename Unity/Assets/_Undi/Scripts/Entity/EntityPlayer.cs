@@ -235,6 +235,9 @@ public class EntityPlayer : EntityBase
 					{
 						OnDie();
 					}
+
+					// Increase score
+					Director.Instance.managerGame.ScoreIncrease( id );
 				}
 
 				// Update UI
@@ -258,6 +261,7 @@ public class EntityPlayer : EntityBase
 				// Sound effects
 				//Director.Instance.managerAudio.PlaySfx( ManagerAudio.Sfx.Explosion1 );
 				Director.Instance.managerAudio.PlayRandomExplosionSfx();
+
 			}
 			//var script = col.transform.parent.GetComponent<EntityPlayer>();
 			//if( script != null )

@@ -68,20 +68,15 @@ public class ManagerUI : MonoBehaviour
 	}
 	#endregion
 
-	#region Inagem HUD management
+	#region Ingame HUD management
 	public void SetHealth( int player, int health )
 	{
 		panelHUD.SetHealth( player, health );
-		/*
-        if (newHealth < 0)
-        {
-            health.text = "Health: --";
-        }
-        else
-        {
-            health.text = "Health: " + newHealth.ToString("00");
-        }
-		*/
+	}
+
+	public void SetScore( int player, int score )
+	{
+		panelHUD.SetScore( player, score );
 	}
 	#endregion
 }
