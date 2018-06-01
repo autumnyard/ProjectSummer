@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 
 public class Director : MonoBehaviour
@@ -28,6 +29,7 @@ public class Director : MonoBehaviour
 	public int currentLevel = 0;
 
 	public bool isPaused;
+
 	#endregion
 
 
@@ -61,10 +63,11 @@ public class Director : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if( managerCamera.cameras[0].type == CameraHelper.Type.SnapToCameraGrabs )
-		{
-			CheckForNewCameraGrab();
-		}
+		// This is only for cameras with SnapToCameraGrab mode
+		//if( managerCamera.cameras[0].type == CameraHelper.Type.SnapToCameraGrabs )
+		//{
+		//	CheckForNewCameraGrab();
+		//}
 	}
 	#endregion
 
@@ -81,14 +84,19 @@ public class Director : MonoBehaviour
 			case Structs.GameScene.Initialization:
 				SwitchToMenu();
 
-				// Reset game. Only set score to 0 for now
-				managerGame.Initialize();
 				break;
 
 			case Structs.GameScene.Menu:
 				managerUI.SetPanels();
 				//managerInput.SetEvents(); // using rewired
-				GameBegin(); // there's no menu yet
+				managerCamera.UpdateCameras();
+
+				// This will be called from the update with input
+				//GameBegin();
+
+				// Reset game. Only set score to 0 for now
+				managerGame.Initialize();
+
 				break;
 
 			case Structs.GameScene.LoadingGame:
@@ -102,43 +110,63 @@ public class Director : MonoBehaviour
 				//LoadLevel();
 
 				// Load the 2 players
-				managerEntity.SummonPlayers();
+				bool playerSummoningFailed = managerEntity.SummonPlayers();
+				if( !playerSummoningFailed )
+				{
+					Debug.LogError( "Failed instantiating players " );
+					GameEnd();
+					return;
+				}
 
 				// And subscribe to endgame conditions
 				if( managerEntity.playersScript[0] != null )
 				{
-					managerEntity.playersScript[0].OnDie += GameEnd;
+					PabloTools.Bind( ref managerEntity.playersScript[0].OnDie, GameReset );
 				}
 				if( managerEntity.playersScript[1] != null )
 				{
-					managerEntity.playersScript[1].OnDie += GameEnd;
+					PabloTools.Bind( ref managerEntity.playersScript[1].OnDie, GameReset );
 				}
 
+				// Set managers
 				//managerInput.SetEvents(); // using rewired
 				managerUI.SetPanels();
+				managerCamera.UpdateCameras();
 
 				// Play start sfx
 				managerAudio.PlaySfx( ManagerAudio.Sfx.Start );
 				break;
 
 			case Structs.GameScene.GameReset:
-				// Unsubscribe from endgame conditions
-				managerEntity.playersScript[0].OnDie -= GameEnd;
-				managerEntity.playersScript[1].OnDie -= GameEnd;
+				// Unsubscribe from endgame conditions and remove players
+				if( managerEntity.playersScript[0] != null )
+				{
+					PabloTools.Unbind( ref managerEntity.playersScript[0].OnDie );
+				}
+				if( managerEntity.playersScript[1] != null )
+				{
+					PabloTools.Unbind( ref managerEntity.playersScript[1].OnDie );
+				}
+				managerEntity.Reset();
 
-				managerEntity.Reset(); // and remove players
-									   //managerMap.Reset();
+				//managerMap.Reset();
 				GameBegin();
 				break;
 
 			case Structs.GameScene.GameEnd:
-				// Unsubscribe from endgame conditions
-				managerEntity.playersScript[0].OnDie -= GameEnd;
-				managerEntity.playersScript[1].OnDie -= GameEnd;
+				// Unsubscribe from endgame conditions and remove players
+				if( managerEntity.playersScript[0] != null )
+				{
+					PabloTools.Unbind( ref managerEntity.playersScript[0].OnDie );
+				}
+				if( managerEntity.playersScript[1] != null )
+				{
+					PabloTools.Unbind( ref managerEntity.playersScript[1].OnDie );
+				}
+				managerEntity.Reset();
 
-				managerEntity.Reset();  // and remove players
-										//managerMap.Reset();
-				managerInput.SetEvents();
+				//managerMap.Reset();
+				//managerInput.SetEvents(); // using rewired
 				managerUI.SetPanels();
 				SwitchToMenu();
 				break;
@@ -159,6 +187,7 @@ public class Director : MonoBehaviour
 		currentGameDifficulty = gameDifficulty;
 		currentGameView = viewMode;
 	}
+
 	private void LoadLevel()
 	{
 		/*
@@ -289,12 +318,8 @@ public class Director : MonoBehaviour
 	#endregion
 
 
-	#region DEBUG
-	//public void DebugHurtPlayer()
-	//{
-	//    managerEntity.playersScript[0].Hurt();
-	//}
 
+	#region DEBUG
 	public void DebugLoadLevel( int numb )
 	{
 		LoadNumberLevel( numb );
@@ -339,9 +364,5 @@ public class Director : MonoBehaviour
 		managerCamera.cameras[0].OnNewCameraGrab( correctCameraGrab.x, correctCameraGrab.y );
 		*/
 	}
-
-	//private void PlayStartThingies()
-	//{
-	//		}
 	#endregion
 }

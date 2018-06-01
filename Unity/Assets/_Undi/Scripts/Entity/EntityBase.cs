@@ -54,7 +54,7 @@ public abstract class EntityBase : MonoBehaviour
 	// Events
 	public delegate void Delegate();
 	public Delegate OnAppear;
-	public Delegate OnDie;
+	public Constants.Method OnDie;
 	public Delegate OnExitMap;
 	public Delegate OnCollideWithEntity;
 

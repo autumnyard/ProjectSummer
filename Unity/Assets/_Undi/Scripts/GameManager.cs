@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Rewired;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -8,6 +10,13 @@ public class GameManager : MonoBehaviour
 	private int scoreP1;
 	private int scoreP2;
 	private int mapCurrent;
+
+	// Input
+	private Keyboard keyboard;
+	private int keyEnter;
+	private int keySpacebar;
+	private int keyEscape;
+
 	#endregion
 
 	#region Monobehaviour
@@ -20,6 +29,11 @@ public class GameManager : MonoBehaviour
 	{
 		Director.Instance.EverythingBeginsHere();
 	}
+
+	private void LateUpdate()
+	{
+		CheckGlobalInput();
+	}
 	#endregion
 
 	#region Game Management
@@ -27,6 +41,47 @@ public class GameManager : MonoBehaviour
 	{
 		mapCurrent = 0;
 		ScoreReset();
+
+		keyboard = ReInput.controllers.Keyboard;
+		keyEnter = keyboard.GetButtonIndexByKeyCode( KeyCode.KeypadEnter );
+		keySpacebar = keyboard.GetButtonIndexByKeyCode( KeyCode.Space );
+		keyEscape = keyboard.GetButtonIndexByKeyCode( KeyCode.Escape );
+	}
+	#endregion
+
+
+	#region Global input management
+	private void CheckGlobalInput()
+	{
+		switch( Director.Instance.currentScene )
+		{
+			case Structs.GameScene.Menu:
+				//if( ReInput.players.GetPlayer( 0 ).GetButtonDown( "Start" ) )
+				if( keyboard.GetButtonDownById( keyEnter ) || keyboard.GetButtonDownById( keySpacebar ) )
+				{
+					Director.Instance.GameBegin();
+				}
+				break;
+
+			case Structs.GameScene.Ingame:
+				if( keyboard.GetButtonDownById( keyEscape ) )
+				{
+					Director.Instance.GameEnd();
+				}
+				break;
+
+			default:
+			case Structs.GameScene.Splash:
+			case Structs.GameScene.Initialization:
+			case Structs.GameScene.LoadingGame:
+			case Structs.GameScene.GameReset:
+			case Structs.GameScene.GameEnd:
+			case Structs.GameScene.Score:
+			case Structs.GameScene.Credits:
+			case Structs.GameScene.Exit:
+				break;
+		}
+
 	}
 	#endregion
 
@@ -52,7 +107,7 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-	public void ScoreReset()
+	private void ScoreReset()
 	{
 		scoreP1 = 0;
 		scoreP2 = 0;

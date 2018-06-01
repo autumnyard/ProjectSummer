@@ -193,7 +193,7 @@ public class EntityPlayer : EntityBase
 	private void ActionAttackPreparation()
 	{
 		// Prepare the attack
-		SetActiveTry( preparationInit, true );
+		PabloTools.TryForNullSetActive( preparationInit, true );
 		isPreparingAttack = true;
 	}
 
@@ -202,8 +202,8 @@ public class EntityPlayer : EntityBase
 	{
 		isPreparingAttack = false;
 		canMove = false;
-		SetActiveTry( preparationInit, false );
-		SetActiveTry( preparationAttack, true );
+		PabloTools.TryForNullSetActive( preparationInit, false );
+		PabloTools.TryForNullSetActive( preparationAttack, true );
 		yield return new WaitForSeconds( preparationAttackDelay );
 
 		ActionRecoveryBegin();
@@ -214,7 +214,7 @@ public class EntityPlayer : EntityBase
 	{
 		canMove = false;
 		isDefending = true;
-		SetActiveTry( preparationDefense, true );
+		PabloTools.TryForNullSetActive( preparationDefense, true );
 		yield return new WaitForSeconds( preparationDefenseDelay );
 
 		ActionRecoveryBegin();
@@ -224,15 +224,15 @@ public class EntityPlayer : EntityBase
 	private void ActionRecoveryBegin()
 	{
 		isDefending = false;
-		SetActiveTry( preparationDefense, false );
-		SetActiveTry( preparationAttack, false );
+		PabloTools.TryForNullSetActive( preparationDefense, false );
+		PabloTools.TryForNullSetActive( preparationAttack, false );
 
 		currentAction = StartCoroutine( ActionRecoveryPerform() );
 	}
 
 	private IEnumerator ActionRecoveryPerform()
 	{
-		SetActiveTry( preparationRecovery, true );
+		PabloTools.TryForNullSetActive( preparationRecovery, true );
 		yield return new WaitForSeconds( preparationRecoveryDelay );
 
 		ActionRecoveryEnd();
@@ -241,7 +241,7 @@ public class EntityPlayer : EntityBase
 	private void ActionRecoveryEnd()
 	{
 		// Finish
-		SetActiveTry( preparationRecovery, false );
+		PabloTools.TryForNullSetActive( preparationRecovery, false );
 		canMove = true;
 	}
 	#endregion
@@ -360,14 +360,6 @@ public class EntityPlayer : EntityBase
 		camShake.Play();
 	}
 
-	private void SetActiveTry( GameObject go, bool to )
-	{
-		if( go != null )
-		{
-			go.SetActive( to );
-		}
-	}
-
 	private void PlayParticles( GameObject particlePrefab )
 	{
 		if( particlePrefab != null )
@@ -405,6 +397,13 @@ public class EntityPlayer : EntityBase
 		Vector3 direction = heading / distance;
 		return direction.normalized;
 	}
+	#endregion
+
+
+
+
+	#region Tools
+
 	#endregion
 
 }

@@ -20,6 +20,21 @@ public class ManagerCamera : MonoBehaviour
         // This makes a pointer to the array in Camera
         //Camera.GetAllCameras( cameras ) ;
 
+    }
+
+	#endregion
+
+
+
+
+	#region Management
+	public void UpdateCameras()
+	{
+		SetCameras();
+	}
+
+	private void SetCameras()
+	{
         // This copies the array
         cameras = new CameraHelper[Camera.allCamerasCount];
         for (int i = 0; i < cameras.Length; i++)
@@ -27,12 +42,9 @@ public class ManagerCamera : MonoBehaviour
             cameras[i] = Camera.allCameras[i].GetComponent<CameraHelper>();
         }
 #if DEBUG
-        Debug.Log( "ManagerCamera: We have " + cameras.Length + " cameras, of which the main camera is: " + Camera.main.name );
+        //Debug.Log( "ManagerCamera: We have " + cameras.Length + " cameras, of which the main camera is: " + Camera.main.name );
 #endif
-    }
+	}
+	#endregion
 
-    #endregion
-
-	// TODO: Holy shit man, everything 
-	
 }

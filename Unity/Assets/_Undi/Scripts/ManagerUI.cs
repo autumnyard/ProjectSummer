@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class ManagerUI : MonoBehaviour
 {
-	[Header( "Components" ), SerializeField]
-	private PanelHUD panelHUD;
-	//   [SerializeField]
-	//   private PanelBase panelMenu;
+	[Header( "Components" ), SerializeField] private PanelHUD panelHUD;
+	[SerializeField] private PanelBase panelMenu;
 	//   [SerializeField]
 	//   private PanelBase panelLoading;
 	//[SerializeField]
@@ -37,19 +35,19 @@ public class ManagerUI : MonoBehaviour
 	{
 		switch( Director.Instance.currentScene )
 		{
-			//        case Structs.GameScene.Menu:
-			//            panelHUD.Hide();
-			//            panelMenu.Show();
-			//            panelLoading.Hide();
-			//            panelDebug.Hide();
-			//break;
+			case Structs.GameScene.Menu:
+				panelHUD.Hide();
+				panelMenu.Show();
+				//            panelLoading.Hide();
+				//            panelDebug.Hide();
+				break;
 
-			//         case Structs.GameScene.Ingame:
-			//             panelHUD.Show();
-			//             panelMenu.Hide();
-			//             panelLoading.Hide();
-			//             panelDebug.Show();
-			//             break;
+			case Structs.GameScene.Ingame:
+				panelHUD.Show();
+				panelMenu.Hide();
+				//             panelLoading.Hide();
+				//             panelDebug.Show();
+				break;
 
 			//case Structs.GameScene.LoadingGame:
 			//             panelMenu.Hide();
@@ -60,7 +58,7 @@ public class ManagerUI : MonoBehaviour
 
 			default:
 				//panelMenu.Hide();
-				panelHUD.Show();
+				//panelHUD.Show();
 				//panelLoading.Hide();
 				//panelDebug.Hide();
 				break;
