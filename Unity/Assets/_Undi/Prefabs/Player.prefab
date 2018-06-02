@@ -411,6 +411,7 @@ MonoBehaviour:
   id: 0
   health: 0
   runSpeed: 100
+  state: 0
   preparationInitDelay: 0.6
   preparationAttackDelay: 0.1
   preparationDefenseDelay: 0.2
@@ -426,8 +427,11 @@ MonoBehaviour:
   preparationAttack: {fileID: 1845629719305184}
   preparationDefense: {fileID: 1192801088336724}
   preparationRecovery: {fileID: 1286715175757032}
-  p1material: {fileID: 2100000, guid: 39dec4f80edc6e5488b5c6080a1b09bf, type: 2}
-  p2material: {fileID: 2100000, guid: 2391e93be004fdf42ba943c8580efe61, type: 2}
+  materials:
+  - {fileID: 2100000, guid: 39dec4f80edc6e5488b5c6080a1b09bf, type: 2}
+  - {fileID: 2100000, guid: 2391e93be004fdf42ba943c8580efe61, type: 2}
+  - {fileID: 2100000, guid: 84d3a1622b8a7624090e15fe89d60f7b, type: 2}
+  - {fileID: 2100000, guid: bb70d49081119e547a025e5d14a7e44b, type: 2}
 --- !u!135 &135736203551467118
 SphereCollider:
   m_ObjectHideFlags: 1

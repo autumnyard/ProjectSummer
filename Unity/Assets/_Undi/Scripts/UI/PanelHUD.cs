@@ -8,6 +8,9 @@ public class PanelHUD : PanelBase
 
 	[SerializeField] private Text p1health;
 	[SerializeField] private Text p2health;
+	[SerializeField] private Text p3health;
+	[SerializeField] private Text p4health;
+	[SerializeField] private Text[] healths;
 	[SerializeField] private Text p1score;
 	[SerializeField] private Text p2score;
 
@@ -17,6 +20,17 @@ public class PanelHUD : PanelBase
 		{
 			to = 0;
 		}
+
+		if( healths[player] != null )
+		{
+			healths[player].text = to.ToString();
+		}
+		else
+		{
+			Debug.LogError( "Trying to change health to inexistent player: " + player );
+		}
+
+		/*
 		switch( player )
 		{
 			case 0:
@@ -31,6 +45,7 @@ public class PanelHUD : PanelBase
 				Debug.LogError("Trying to change health to inexistent player.");
 				break;
 		}
+		*/
 	}
 
 	public void SetScore( int player, int to )
@@ -50,7 +65,7 @@ public class PanelHUD : PanelBase
 				break;
 
 			default:
-				Debug.LogError("Trying to change score to inexistent player.");
+				Debug.LogError( "Trying to change score to inexistent player." );
 				break;
 		}
 	}

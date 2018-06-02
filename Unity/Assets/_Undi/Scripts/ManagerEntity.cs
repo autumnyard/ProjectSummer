@@ -38,13 +38,23 @@ public class ManagerEntity : MonoBehaviour
 	public bool SummonPlayers()
 	{
 		// Set number of players
-		if( Director.Instance.currentGameMode == Structs.GameMode.Mode2Players )
+		switch( Director.Instance.currentGameMode )
 		{
-			numPlayers = 2;
-			
-			players = new GameObject[numPlayers];
-			playersScript = new EntityPlayer[numPlayers];
+			default:
+			case Structs.GameMode.Mode2Players:
+				numPlayers = 2;
+				break;
+			case Structs.GameMode.Mode3Players:
+				numPlayers = 3;
+				break;
+			case Structs.GameMode.Mode4Players:
+				numPlayers = 4;
+				break;
 		}
+
+
+		players = new GameObject[numPlayers];
+		playersScript = new EntityPlayer[numPlayers];
 
 		// Load and summon them
 		bool wentRight = true;

@@ -26,6 +26,7 @@ public class EntityPlayer : EntityBase
 	private Vector2 moveVecPoll;
 
 	// Management
+	[Header( "Main" )]
 	public PlayerState state;
 	private bool canMove;
 	private bool isPreparingAttack;
@@ -54,8 +55,10 @@ public class EntityPlayer : EntityBase
 	[SerializeField] private GameObject preparationAttack;
 	[SerializeField] private GameObject preparationDefense;
 	[SerializeField] private GameObject preparationRecovery;
-	[SerializeField] private Material p1material;
-	[SerializeField] private Material p2material;
+
+	[Header( "Prefabs" )]
+	[SerializeField] private Material[] materials;
+	//[SerializeField] private Material p2material;
 
 	// Internal management
 	private Coroutine currentAction;
@@ -390,23 +393,29 @@ public class EntityPlayer : EntityBase
 
 	private void SetGraphics()
 	{
-		switch( id )
-		{
-			default:
-			case 0:
-				if( p1material != null )
-				{
-					GetComponent<Renderer>().material = p1material;
-				}
-				break;
 
-			case 1:
-				if( p2material != null )
-				{
-					GetComponent<Renderer>().material = p2material;
-				}
-				break;
+		if( materials[id] != null )
+		{
+			GetComponent<Renderer>().material = materials[id];
 		}
+
+		//switch( id )
+		//{
+		//	default:
+		//	case 0:
+		//		if( p1material != null )
+		//		{
+		//			GetComponent<Renderer>().material = p1material;
+		//		}
+		//		break;
+
+		//	case 1:
+		//		if( p2material != null )
+		//		{
+		//			GetComponent<Renderer>().material = p2material;
+		//		}
+		//		break;
+		//}
 	}
 
 	private Vector3 CalculateDirection( Vector3 pointA, Vector3 pointB )

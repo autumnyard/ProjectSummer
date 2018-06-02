@@ -93,6 +93,18 @@ public class GameManager : MonoBehaviour
 		Director.Instance.SetGameSettings( Structs.GameMode.Mode2Players );
 		Director.Instance.GameBegin();
 	}
+
+	public void ButtonPlay3Players()
+	{
+		Director.Instance.SetGameSettings( Structs.GameMode.Mode3Players );
+		Director.Instance.GameBegin();
+	}
+	
+	public void ButtonPlay4Players()
+	{
+		Director.Instance.SetGameSettings( Structs.GameMode.Mode4Players );
+		Director.Instance.GameBegin();
+	}
 	#endregion
 
 
