@@ -192,11 +192,11 @@ public class Director : MonoBehaviour
 
 
 	#region Game settings & management
-	public void SetGameSettings( Structs.GameMode gameMode, Structs.GameDifficulty gameDifficulty, Structs.GameView viewMode )
+	public void SetGameSettings( Structs.GameMode gameMode /*, Structs.GameDifficulty gameDifficulty, Structs.GameView viewMode*/ )
 	{
 		currentGameMode = gameMode;
-		currentGameDifficulty = gameDifficulty;
-		currentGameView = viewMode;
+		//currentGameDifficulty = gameDifficulty;
+		//currentGameView = viewMode;
 	}
 
 	private void LoadLevel()

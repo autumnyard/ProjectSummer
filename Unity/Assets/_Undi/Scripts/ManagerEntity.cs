@@ -5,10 +5,10 @@ public class ManagerEntity : MonoBehaviour
 {
 	#region Variables
 	// Players
-	const int maxPlayers = 2;
+	private int numPlayers = 2;
 	[SerializeField] private GameObject prefabPlayer;
-	[SerializeField] private GameObject[] players = new GameObject[maxPlayers];
-	[HideInInspector] public EntityPlayer[] playersScript = new EntityPlayer[maxPlayers];
+	[SerializeField] private GameObject[] players;
+	[HideInInspector] public EntityPlayer[] playersScript;
 
 	// TODO: Enemy management in a dynamic list
 	// TODO: Inanimate entities, like objects, in a dynamic list
@@ -27,8 +27,8 @@ public class ManagerEntity : MonoBehaviour
 	{
 		Director.Instance.managerEntity = this;
 
-		players = new GameObject[maxPlayers];
-		playersScript = new EntityPlayer[maxPlayers];
+		//players = new GameObject[numPlayers];
+		//playersScript = new EntityPlayer[numPlayers];
 
 	}
 	#endregion
@@ -37,21 +37,29 @@ public class ManagerEntity : MonoBehaviour
 	#region Entity Management
 	public bool SummonPlayers()
 	{
-		Vector2 initPos1 = Vector2.zero;
-		if( player1InitPosition != null )
+		// Set number of players
+		if( Director.Instance.currentGameMode == Structs.GameMode.Mode2Players )
 		{
-			initPos1 = player1InitPosition.position;
+			numPlayers = 2;
+			
+			players = new GameObject[numPlayers];
+			playersScript = new EntityPlayer[numPlayers];
 		}
-		bool p1 = SummonPlayer( 0, initPos1 );
 
-		Vector2 initPos2 = Vector2.zero;
-		if( player2InitPosition != null )
+		// Load and summon them
+		bool wentRight = true;
+
+		for( int i = 0; i < numPlayers; i++ )
 		{
-			initPos2 = player2InitPosition.position;
+			Vector2 initPos = Vector2.zero;
+			if( playersInitPositions[i] != null )
+			{
+				initPos = playersInitPositions[i].position;
+			}
+			wentRight |= SummonPlayer( i, initPos );
 		}
-		bool p2 = SummonPlayer( 1, initPos2 );
 
-		return p1 | p2;
+		return wentRight;
 	}
 
 	public bool SummonPlayer( int which, Vector2 position )
@@ -86,7 +94,7 @@ public class ManagerEntity : MonoBehaviour
 
 	private void RemoveAllPlayers()
 	{
-		for( int i = 0; i < maxPlayers; i++ )
+		for( int i = 0; i < numPlayers; i++ )
 		{
 			RemovePlayer( i );
 		}

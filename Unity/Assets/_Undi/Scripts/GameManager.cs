@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
 	[SerializeField] private int scoreP1;
 	[SerializeField] private int scoreP2;
 	[SerializeField] private int mapCurrent;
-	private Structs.GameMode mode;
 
 	// Input
 	private Keyboard keyboard;
@@ -91,9 +90,7 @@ public class GameManager : MonoBehaviour
 	#region UI button management
 	public void ButtonPlay2Players()
 	{
-		Debug.Log( "asdfasdfsd" );
-		mode = Structs.GameMode.Mode2Players;
-
+		Director.Instance.SetGameSettings( Structs.GameMode.Mode2Players );
 		Director.Instance.GameBegin();
 	}
 	#endregion
