@@ -12,11 +12,21 @@ public class EntityPlayer : EntityBase
 		Attack,
 		Parry
 	}
+
+	public enum PlayerState
+	{
+		NotPlaying,
+		Alive,
+		Dead,
+		MaxValues
+	}
+
 	// Rewired
 	private Player player; // The Rewired Player
 	private Vector2 moveVecPoll;
 
 	// Management
+	public PlayerState state;
 	private bool canMove;
 	private bool isPreparingAttack;
 	public bool isDefending { get; private set; }
@@ -74,6 +84,8 @@ public class EntityPlayer : EntityBase
 		isDefending = false;
 
 		currentAction = null;
+
+		state = PlayerState.Alive;
 	}
 
 	private void Update()
@@ -170,17 +182,24 @@ public class EntityPlayer : EntityBase
 		// Check endgame conditions
 		if( health <= 0 )
 		{
+			// If this player has died
+			state = PlayerState.Dead;
+
+			// Callbacks
 			if( OnDie != null )
 			{
 				OnDie();
 			}
 
 			// Increase score
-			Director.Instance.managerGame.ScoreIncrease( id );
+			//Director.Instance.managerGame.ScoreIncrease( id );
+		}
+		else
+		{
+			// Update UI
+			Director.Instance.managerUI.SetHealth( id, health );
 		}
 
-		// Update UI
-		Director.Instance.managerUI.SetHealth( id, health );
 	}
 	#endregion
 

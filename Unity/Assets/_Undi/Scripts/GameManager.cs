@@ -7,9 +7,10 @@ using Rewired;
 public class GameManager : MonoBehaviour
 {
 	#region Variables
-	private int scoreP1;
-	private int scoreP2;
-	private int mapCurrent;
+	// Game management
+	[SerializeField] private int scoreP1;
+	[SerializeField] private int scoreP2;
+	[SerializeField] private int mapCurrent;
 
 	// Input
 	private Keyboard keyboard;

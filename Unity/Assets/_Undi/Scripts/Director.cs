@@ -138,6 +138,16 @@ public class Director : MonoBehaviour
 				break;
 
 			case Structs.GameScene.GameReset:
+				// Update score
+				if( managerEntity.playersScript[0].state == EntityPlayer.PlayerState.Alive )
+				{
+					Director.Instance.managerGame.ScoreIncrease( 0 );
+				}
+				else if( managerEntity.playersScript[1].state == EntityPlayer.PlayerState.Alive )
+				{
+					Director.Instance.managerGame.ScoreIncrease( 1 );
+				}
+
 				// Unsubscribe from endgame conditions and remove players
 				if( managerEntity.playersScript[0] != null )
 				{
@@ -148,6 +158,7 @@ public class Director : MonoBehaviour
 					PabloTools.Unbind( ref managerEntity.playersScript[1].OnDie );
 				}
 				managerEntity.Reset();
+
 
 				//managerMap.Reset();
 				GameBegin();

@@ -8,7 +8,7 @@ public class ManagerEntity : MonoBehaviour
 	const int maxPlayers = 2;
 	[SerializeField] private GameObject prefabPlayer;
 	[SerializeField] private GameObject[] players = new GameObject[maxPlayers];
-	[HideInInspector] public EntityBase[] playersScript = new EntityBase[maxPlayers];
+	[HideInInspector] public EntityPlayer[] playersScript = new EntityPlayer[maxPlayers];
 
 	// TODO: Enemy management in a dynamic list
 	// TODO: Inanimate entities, like objects, in a dynamic list
@@ -25,7 +25,7 @@ public class ManagerEntity : MonoBehaviour
 		Director.Instance.managerEntity = this;
 
 		players = new GameObject[maxPlayers];
-		playersScript = new EntityBase[maxPlayers];
+		playersScript = new EntityPlayer[maxPlayers];
 
 	}
 	#endregion
@@ -67,7 +67,7 @@ public class ManagerEntity : MonoBehaviour
 		}
 
 		// Get player script
-		playersScript[which] = players[which].GetComponent<EntityBase>();
+		playersScript[which] = players[which].GetComponent<EntityPlayer>();
 
 		if( playersScript[which] == null )
 		{
