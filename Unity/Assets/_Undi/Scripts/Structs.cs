@@ -2,7 +2,9 @@
 {
     public enum GameMode
     {
-        Normal,
+        Mode2Players,
+		Mode3Players,
+		Mode4Players,
         MaxValues
     }
 

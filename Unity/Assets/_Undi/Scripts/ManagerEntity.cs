@@ -15,6 +15,9 @@ public class ManagerEntity : MonoBehaviour
 	// TODO: Pickup entities, like items, in a dynamic list
 	[SerializeField] private Transform player1InitPosition;
 	[SerializeField] private Transform player2InitPosition;
+	[SerializeField] private Transform player3InitPosition;
+	[SerializeField] private Transform player4InitPosition;
+	[SerializeField] private Transform[] playersInitPositions;
 
 	#endregion
 

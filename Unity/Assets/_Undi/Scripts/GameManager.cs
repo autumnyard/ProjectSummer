@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 	[SerializeField] private int scoreP1;
 	[SerializeField] private int scoreP2;
 	[SerializeField] private int mapCurrent;
+	private Structs.GameMode mode;
 
 	// Input
 	private Keyboard keyboard;
@@ -58,10 +59,10 @@ public class GameManager : MonoBehaviour
 		{
 			case Structs.GameScene.Menu:
 				//if( ReInput.players.GetPlayer( 0 ).GetButtonDown( "Start" ) )
-				if( keyboard.GetButtonDownById( keyEnter ) || keyboard.GetButtonDownById( keySpacebar ) )
-				{
-					Director.Instance.GameBegin();
-				}
+				//if( keyboard.GetButtonDownById( keyEnter ) || keyboard.GetButtonDownById( keySpacebar ) )
+				//{
+				//	Director.Instance.GameBegin();
+				//}
 				break;
 
 			case Structs.GameScene.Ingame:
@@ -83,6 +84,17 @@ public class GameManager : MonoBehaviour
 				break;
 		}
 
+	}
+	#endregion
+
+
+	#region UI button management
+	public void ButtonPlay2Players()
+	{
+		Debug.Log( "asdfasdfsd" );
+		mode = Structs.GameMode.Mode2Players;
+
+		Director.Instance.GameBegin();
 	}
 	#endregion
 
