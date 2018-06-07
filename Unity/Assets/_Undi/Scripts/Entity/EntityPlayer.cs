@@ -31,6 +31,8 @@ public class EntityPlayer : EntityBase
 	private bool canMove;
 	private bool isPreparingAttack;
 	public bool isDefending { get; private set; }
+	private bool invulnerable;
+	private float invulnerabilityTime = 0.8f;
 
 	//[SerializeField] private uint health;
 
@@ -85,6 +87,7 @@ public class EntityPlayer : EntityBase
 		canMove = true;
 		isPreparingAttack = false;
 		isDefending = false;
+		invulnerable = false;
 
 		currentAction = null;
 
@@ -170,14 +173,22 @@ public class EntityPlayer : EntityBase
 	#region Health Management 
 	private void Damage( CollisionType type )
 	{
+		// Stop current action, defense or attack
+		ForceActionEnd();
+
+		// Make invulnerable
+		StartCoroutine( Invulnerability() );
+
 		//Damage
 		switch( type )
 		{
 			default:
 			case CollisionType.Attack:
+				Debug.Log( " - Damage Attack" );
 				health--;
 				break;
 			case CollisionType.Parry:
+				Debug.Log( " + Damage Parry" );
 				health -= 2;
 				break;
 		}
@@ -203,6 +214,13 @@ public class EntityPlayer : EntityBase
 			Director.Instance.managerUI.SetHealth( id, health );
 		}
 
+	}
+
+	private IEnumerator Invulnerability()
+	{
+		invulnerable = true;
+		yield return new WaitForSeconds( invulnerabilityTime );
+		invulnerable = false;
 	}
 	#endregion
 
@@ -248,7 +266,7 @@ public class EntityPlayer : EntityBase
 		isDefending = false;
 		PabloTools.TryForNullSetActive( preparationDefense, false );
 		PabloTools.TryForNullSetActive( preparationAttack, false );
-
+		//Debug.Log( " x Action recovery " );
 		currentAction = StartCoroutine( ActionRecoveryPerform() );
 	}
 
@@ -266,6 +284,18 @@ public class EntityPlayer : EntityBase
 		PabloTools.TryForNullSetActive( preparationRecovery, false );
 		canMove = true;
 	}
+
+
+	private void ForceActionEnd()
+	{
+		isDefending = false;
+		if( currentAction != null )
+		{
+			StopCoroutine( currentAction );
+			currentAction = null;
+		}
+		ActionRecoveryBegin();
+	}
 	#endregion
 
 
@@ -275,32 +305,24 @@ public class EntityPlayer : EntityBase
 	{
 		if( col.gameObject.CompareTag( "Attack" ) )
 		{
-			if( isDefending )
+			if( isDefending ) // If parry
 			{
-				// If parry
 				//Debug.Log( gameObject.name + " parries " + col.transform.parent.name );
 
-				// TODO: Damage the other player
+				// Damage the other player
 				Vector3 direction = CalculateDirection( transform.position, col.transform.position );
 				col.transform.parent.GetComponent<EntityPlayer>().ReceiveParry( direction );
 
 				// Force stop the defense
-				isDefending = false;
+				//isDefending = false;
+				ForceActionEnd();
 			}
-			else
+			else if( !invulnerable ) // This player was attacked
 			{
-				// This player was attacked
+
 				//Debug.Log( col.transform.parent.name + " attacks " + gameObject.name );
-
-				// Damage and check endgame condition
-				Damage( CollisionType.Attack );
-
-				// Apply physics
 				Vector3 direction = CalculateDirection( col.transform.position, transform.position );
-				rigidbody.AddForce( direction * impactForceAttack, ForceMode.Impulse );
-
-				// Feedback
-				CollisionFeedback( CollisionType.Attack );
+				ReceiveAttack( direction );
 			}
 		}
 		else if( col.gameObject.CompareTag( "Defense" ) )
@@ -335,25 +357,32 @@ public class EntityPlayer : EntityBase
 	#region Helpers
 	public void ReceiveParry( Vector3 direction )
 	{
-		Debug.Log( gameObject.name + " has been parried " );
+		//Debug.Log( gameObject.name + " has been parried " );
+
+		// Apply physics
 		GetComponent<Rigidbody>().AddForce( direction * impactForceParry, ForceMode.Impulse );
 
+		// Hurt player and force stop actions
 		Damage( CollisionType.Parry );
 
-		// Force stop the current action
-		isDefending = false;
-		if( currentAction != null )
-		{
-			StopCoroutine( currentAction );
-			currentAction = null;
-		}
-		ActionRecoveryBegin();
-
 		// Feedback
-		CollisionFeedback( CollisionType.Parry );
+		CollisionUIFeedback( CollisionType.Parry );
 	}
 
-	private void CollisionFeedback( CollisionType type )
+	private void ReceiveAttack( Vector3 direction )
+	{
+
+		// Damage and check endgame condition
+		Damage( CollisionType.Attack );
+
+		// Apply physics
+		rigidbody.AddForce( direction * impactForceAttack, ForceMode.Impulse );
+
+		// Feedback
+		CollisionUIFeedback( CollisionType.Attack );
+	}
+
+	private void CollisionUIFeedback( CollisionType type )
 	{
 		// Camera effects
 		var camShake = Director.Instance.managerCamera.cameras[0].GetComponent<TweenShake>();

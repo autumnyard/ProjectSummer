@@ -32,9 +32,9 @@ public abstract class EntityBase : MonoBehaviour
 	public int id;
 	[SerializeField] protected int health;
 	protected const int healthMax = 5;
-	private bool isInvulnerable;
-	private float invulnerabilityTime = -1f;
-	private const uint invulnerabilityFrames = 5u;
+	//private bool isInvulnerable;
+	//private float invulnerabilityTime = -1f;
+	//private const uint invulnerabilityFrames = 5u;
 
 	// Physics
 	//[Header("Physics")]
@@ -136,44 +136,9 @@ public abstract class EntityBase : MonoBehaviour
 	protected void ChangeState( States to )
 	{
 		currentState = to;
-		//Debug.Log("Change the entity " + name + " state to: " + currentState);
-		RunState();
+		Debug.Log("Change the entity " + name + " state to: " + currentState);
 	}
 
-	private void RunState()
-	{
-		switch( currentState )
-		{
-			case States.Init:
-				SetInvulnerability( true );
-				health = healthMax;
-				Director.Instance.managerUI.SetHealth(id, health );
-				ChangeState( States.Appearing ); // Automatically change to appearing
-				break;
-
-			case States.Appearing:
-				PlayAnimationAppearing(); // Play appearing animation
-				break;
-
-			case States.Normal:
-				SetInvulnerability( false );
-				break;
-
-			case States.Hurting:
-				SetInvulnerability( true );
-				PlayAnimationHurting(); // Play hurting animation
-				break;
-
-			case States.Dying:
-				SetInvulnerability( true );
-				PlayAnimationDying(); // Play dying animation
-				break;
-
-			case States.Dead:
-				Die();
-				break;
-		}
-	}
 	#endregion
 
 
@@ -183,50 +148,7 @@ public abstract class EntityBase : MonoBehaviour
 		id = idP;
 	}
 
-	private void SetInvulnerability( bool to )
-	{
-		isInvulnerable = to;
-		if( isInvulnerable )
-		{
-			collider.enabled = false;
-		}
-		else
-		{
-			collider.enabled = true;
-		}
-	}
 
-	private IEnumerator SetInvulnerabilityTimed( float time )
-	{
-		collider.enabled = false;
-		yield return new WaitForSeconds( invulnerabilityTime );
-		collider.enabled = true;
-	}
-
-	private void Hurt( int damage = 10 )
-	{
-		// TODO: This check may be unnecesary
-		if( !isInvulnerable )
-		{
-			health -= damage;
-
-			//Debug.Log(name+" was hurt, remaining health: "+ health);
-
-			if( OnHurt != null )
-			{
-				OnHurt( health );
-			}
-
-			if( health <= 0 )
-			{
-				ChangeState( States.Dying );
-			}
-			else
-			{
-				ChangeState( States.Hurting );
-			}
-		}
-	}
 
 	private void Die()
 	{
